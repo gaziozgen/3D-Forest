@@ -9,7 +9,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] CharacterController controller;
 
     Transform _transform;
-    Vector3 moveVelocity;
+    float velocityY;
 
     private void Awake()
     {
@@ -20,14 +20,14 @@ public class PlayerMovement : MonoBehaviour
     private void Update()
     {
         // if player on ground, set vertical force to 0
-        if (controller.isGrounded && moveVelocity.y < 0) moveVelocity.y = 0f;
+        if (controller.isGrounded && velocityY < 0) velocityY = 0f;
 
         // get relative move vector and apply to character controller
-        Vector3 move = (Input.GetAxis("Horizontal") * _transform.right + Input.GetAxis("Vertical") * _transform.forward).normalized;
-        controller.Move(moveSpeed * Time.deltaTime * move);
+        Vector3 move = Input.GetAxis("Horizontal") * _transform.right + Input.GetAxis("Vertical") * _transform.forward;
+        controller.Move(moveSpeed * Time.deltaTime * Vector3.ClampMagnitude(move, 1f));
 
         // apply gravity continuously
-        moveVelocity.y += gravity * Time.deltaTime;
-        controller.Move(moveVelocity * Time.deltaTime);
+        velocityY += gravity * Time.deltaTime;
+        controller.Move(velocityY * Time.deltaTime * Vector3.up);
     }
 }
